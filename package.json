@@ -1,0 +1,27 @@
+{
+  "name": "com.oliviermorland.openai-assistants-unity",
+  "version": "0.0.1",
+  "displayName": "OpenAI Assistants For Unity",
+  "description": "An unofficial OpenAI Unity package that leverages Open AI's Asssistants",
+  "unity": "2020.3",
+  "unityRelease": "0f1",
+  "dependencies": {
+    //"com.unity.nuget.newtonsoft-json": "3.2.1"
+  },
+  "keywords": [
+    "openai",
+    "chatgpt",
+    "ai"
+  ],
+  "author": {
+    "name": "Oliver Morland",
+    "url": "https://github.com/OliverMorland"
+  },
+  "samples": [
+    {
+      "displayName": "Assistant Chat",
+      "description": "A simple chat interface allowing you to talk to a desired assistant.",
+      "path": "Samples~/AssistantChat"
+    }
+  ]
+}
