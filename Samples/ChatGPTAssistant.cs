@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,20 +18,27 @@ namespace OpenAIAssistantsApi
         private float height;
         public OpenAIAssistant openAiAssistant;
 
-        private List<ChatMessage> messages = new List<ChatMessage>();
-        private string prompt = "Act as a random stranger in a chat room and reply to the questions. Don't break character. Don't ever mention that you are an AI model.";
+        private List<string> messages = new List<string>();
 
         private void Start()
         {
             button.onClick.AddListener(OnButtonClicked);
+            openAiAssistant.OnResponseRecieved.AddListener(OnResponseRecieved);
         }
 
-        private void AppendMessage(ChatMessage message)
+        private void AppendMessage(string message, bool isUser)
         {
             scroll.content.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 0);
-
-            var item = Instantiate(message.role == "user" ? sent : received, scroll.content);
-            item.GetChild(0).GetChild(0).GetComponent<Text>().text = message.content;
+            RectTransform item;
+            if (isUser)
+            {
+                item = Instantiate(sent, scroll.content);
+            }
+            else
+            {
+                item = Instantiate(received, scroll.content);
+            }
+            item.GetChild(0).GetChild(0).GetComponent<Text>().text = message;
             item.anchoredPosition = new Vector2(0, -height);
             LayoutRebuilder.ForceRebuildLayoutImmediate(item);
             height += item.sizeDelta.y;
@@ -40,54 +48,27 @@ namespace OpenAIAssistantsApi
 
         void OnButtonClicked()
         {
-            StartCoroutine(SendReplyAsync());
+            SendReply();
         }
 
-        IEnumerator SendReplyAsync()
+        void SendReply()
         {
-            yield return null;
+            AppendMessage(inputField.text, true);
+            messages.Add(inputField.text);
+            openAiAssistant.AskAssistant(inputField.text);
+
+            button.enabled = false;
+            inputField.text = "";
+            inputField.enabled = false;
         }
 
-        //private async void SendReply()
-        //{
-        //    var newMessage = new ChatMessage()
-        //    {
-        //        role = "user",
-        //        content = inputField.text
-        //    };
+        private void OnResponseRecieved(string response)
+        {
+            messages.Add(response);
+            AppendMessage(response, false);
 
-        //    AppendMessage(newMessage);
-
-        //    if (messages.Count == 0) newMessage.content = prompt + "\n" + inputField.text;
-
-        //    messages.Add(newMessage);
-
-        //    button.enabled = false;
-        //    inputField.text = "";
-        //    inputField.enabled = false;
-
-        //    // Complete the instruction
-        //    var completionResponse = await openAiAssistant.CreateChatCompletion(new CreateChatCompletionRequest()
-        //    {
-        //        Model = "gpt-3.5-turbo-0613",
-        //        Messages = messages
-        //    });
-
-        //    if (completionResponse.Choices != null && completionResponse.Choices.Count > 0)
-        //    {
-        //        var message = completionResponse.Choices[0].Message;
-        //        message.Content = message.Content.Trim();
-
-        //        messages.Add(message);
-        //        AppendMessage(message);
-        //    }
-        //    else
-        //    {
-        //        Debug.LogWarning("No text was generated from this prompt.");
-        //    }
-
-        //    button.enabled = true;
-        //    inputField.enabled = true;
-        //}
+            button.enabled = true;
+            inputField.enabled = true;
+        }
     }
 }
