@@ -72,7 +72,7 @@ namespace OpenAIAssistantsApi
 
         UnityWebRequest CreateWebRequest(WebRequestData webRequestData)
         {
-            string methodAsString = GetMethodAsString(webRequestData.methodType);
+            string methodAsString = Utils.GetMethodTypeAsString(webRequestData.methodType);
             UnityWebRequest webRequest = new UnityWebRequest(webRequestData.path, methodAsString);
             webRequest.uploadHandler = new UploadHandlerRaw(webRequestData.body);
             webRequest.downloadHandler = new DownloadHandlerBuffer();
@@ -80,24 +80,6 @@ namespace OpenAIAssistantsApi
             webRequest.SetRequestHeader("OpenAI-Beta", "assistants=v2");
             webRequest.SetRequestHeader("Authorization", "Bearer " + openAIConfig.secretAPIKey);
             return webRequest;
-        }
-
-        string GetMethodAsString(WebRequestData.MethodType methodType)
-        {
-            string methodAsString = "";
-            switch (methodType)
-            {
-                case WebRequestData.MethodType.POST:
-                    methodAsString = "POST";
-                    break;
-                case WebRequestData.MethodType.GET:
-                    methodAsString = "GET";
-                    break;
-                default:
-                    methodAsString = "GET";
-                    break;
-            }
-            return methodAsString;
         }
 
         IEnumerator DispatchWebRequestAsync(UnityWebRequest webRequest, Action<string> onRequestFailed, Action<string> onRequestSucceeded)
