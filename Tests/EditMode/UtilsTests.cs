@@ -5,19 +5,22 @@ using OpenAIAssistantsApi;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-public class UtilsTests
+namespace OpenAIAssistantsApi
 {
-    [Test]
-    public void GetMethodTypeTest()
+    public class UtilsTests
     {
-        string getAsString = Utils.GetMethodTypeAsString(WebRequestData.MethodType.GET);
-        Assert.AreEqual("GET", getAsString);
-    }
+        [Test]
+        public void GetMethodTypeTest()
+        {
+            string getAsString = Utils.GetMethodTypeAsString(WebRequestData.MethodType.GET);
+            Assert.AreEqual("GET", getAsString);
+        }
 
-    [Test]
-    public void PostMethodTypeTest()
-    {
-        string postAsString = Utils.GetMethodTypeAsString(WebRequestData.MethodType.POST);
-        Assert.AreEqual("POST", postAsString);
+        [Test]
+        public void PostMethodTypeTest()
+        {
+            string postAsString = Utils.GetMethodTypeAsString(WebRequestData.MethodType.POST);
+            Assert.AreEqual("POST", postAsString);
+        }
     }
 }
