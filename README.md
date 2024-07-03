@@ -1,3 +1,4 @@
+![OpenAIIcon](./Images/openaiIcon.png)
 # Open AI Assistants
 This package leverages Open AI's assistants Api in order for you to easily create AI NPCs.
 
