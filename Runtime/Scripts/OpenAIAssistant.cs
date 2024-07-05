@@ -12,7 +12,7 @@ namespace OpenAIAssistantsApi
     {
         public OpenAIConfigurationSO openAIConfig;
         public string assistantId = "asst_iQOTrPcuusPL2UEvd5gNjTHl";
-        public UnityEvent<string> OnResponseRecieved;
+        public UnityEvent<string> OnResponseRecieved = new UnityEvent<string>();
         private string threadId;
         const string apiEndPointRoot = "https://api.openai.com/v1/threads";
         const float LIST_MESSAGES_INTERVAL = 0.5f;
@@ -21,7 +21,14 @@ namespace OpenAIAssistantsApi
         // Start is called before the first frame update
         void Start()
         {
-            CreateNewThread();
+            if (openAIConfig  == null)
+            {
+                Debug.LogError("No OpenAI Configuration has been added. Please add one.");
+            }
+            else
+            {
+                CreateNewThread();
+            }
         }
 
         void CreateNewThread()
@@ -97,7 +104,24 @@ namespace OpenAIAssistantsApi
 
         public void AskAssistant(string userMessage)
         {
+            StartCoroutine(WaitForThreadIdThenAddMessage(userMessage));
+        }
+
+        IEnumerator WaitForThreadIdThenAddMessage(string userMessage)
+        {
+            while(ThreadIdIsSet == false)
+            {
+                yield return null;
+            }
             AddMessage(userMessage);
+        }
+
+        bool ThreadIdIsSet
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(threadId);
+            }
         }
 
         void AddMessage(string userMessage)
@@ -229,6 +253,7 @@ namespace OpenAIAssistantsApi
         {
             WebRequestData requestData = new WebRequestData();
             requestData.path = $"{apiEndPointRoot}/{threadId}/messages";
+            Debug.Log(requestData.path);
             requestData.methodType = WebRequestData.MethodType.POST;
             requestData.body = CreateAddMessageRequestBody(userMessage);
             DispatchWebRequest(requestData, onRequestFailed, onRequestSucceeded);
