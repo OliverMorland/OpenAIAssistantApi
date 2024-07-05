@@ -95,5 +95,13 @@ namespace OpenAIAssistantsApi
         public string[] annotations;
     }
 
+    [System.Serializable]
+    public struct Configuration
+    {
+        public string api_key;
+        public string organization;
+    }
+
+
 }
 
