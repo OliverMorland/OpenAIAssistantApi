@@ -1,4 +1,5 @@
 # This .gitignore file should be placed at the root of your Unity project directory
 
 #Ignoring Authentication file to protect api key
-/Resources/auth.json
+Resources/openAiAuth.json
+Resources/openAiAuth.json.meta

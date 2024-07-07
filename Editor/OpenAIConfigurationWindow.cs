@@ -11,13 +11,18 @@ namespace OpenAIAssistantsApi
     public class OpenAIConfigurationWindow : EditorWindow
     {
         private string inputField;
-        const string authenticationFile = "auth";
-
+        const string authenticationFile = "openAiAuth";
+        const string authenticationFilePath = "Assets/OpenAIAssistantsApi/Resources/openAiAuth.json";
+            
 
         [MenuItem("Window/OpenAI Configuration")]
         public static void ShowWindow()
         {
             OpenAIConfigurationWindow window = GetWindow<OpenAIConfigurationWindow>("OpenAI Configuration Window");
+            if (!File.Exists(authenticationFilePath))
+            {
+                window.CreateAuthenticationFile();
+            }
             window.inputField = window.GetApiKeyFromAuthFile();            
         }
 
@@ -47,11 +52,12 @@ namespace OpenAIAssistantsApi
         {
             if (!string.IsNullOrEmpty(inputField))
             {
-                Debug.Log("Input Applied: " + inputField);
+                SetNewApiKey(inputField);
+                Debug.Log("Set new api key to be " + inputField);
             }
             else
             {
-                Debug.LogWarning("Input field is empty!");
+                Debug.LogError("Could not set new api key because input field is empty");
             }
         }
 
@@ -75,11 +81,25 @@ namespace OpenAIAssistantsApi
             Configuration configuration = new Configuration();
             configuration.api_key = newApiKey;
             string authText = JsonUtility.ToJson(configuration);
-            string path = "Assets/Resources";
             try
             {
-                //File.WriteAllText(path, content);
-                Debug.Log("Auth file content set successfully.");
+                File.WriteAllText(authenticationFilePath, authText);
+                AssetDatabase.Refresh(); // Refresh the asset database to reflect changes in the editor
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("Failed to write to auth file: " + e.Message);
+            }
+        }
+
+        private void CreateAuthenticationFile()
+        {
+            Configuration configuration = new Configuration();
+            configuration.api_key = "";
+            string authText = JsonUtility.ToJson(configuration);
+            try
+            {
+                File.WriteAllText(authenticationFilePath, authText);
                 AssetDatabase.Refresh(); // Refresh the asset database to reflect changes in the editor
             }
             catch (System.Exception e)
